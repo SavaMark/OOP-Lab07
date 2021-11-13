@@ -4,6 +4,7 @@
 package it.unibo.oop.lab.nesting1;
 
 import java.util.HashSet;
+import java.util.Objects;
 import java.util.Set;
 
 import it.unibo.oop.lab.socialnetwork.SocialNetworkUserImpl;
@@ -14,52 +15,38 @@ import it.unibo.oop.lab.socialnetwork.User;
  * Represents a social network user along with the sports he/she likes to do or
  * to follow.
  * 
- * 1) Complete the definition of the nested static class Sport, featuring just a
- * field representing the sport name.
- * 
- * 2) Add the unimplemented methods.
+ * The sport has to be defined as a nested static class, featuring just a field
+ * representing the sport name.
  * 
  * @param <U>
  *            specific {@link User} type
  */
 public class SportSocialNetworkUserImpl<U extends User> extends SocialNetworkUserImpl<U> {
-
+ 
     /**
      * Static {@link Sport} constant.
      */
-    public static final Sport SOCCER;
+    public static final Sport SOCCER = new Sport("Football");
     /**
      * Static {@link Sport} constant.
      */
-    public static final Sport F1;
+    public static final Sport F1 = new Sport("Formula 1");
     /**
      * Static {@link Sport} constant.
      */
-    public static final Sport MOTOGP;
+    public static final Sport MOTOGP = new Sport("MotoGP");
     /**
      * Static {@link Sport} constant.
      */
-    public static final Sport VOLLEY;
+    public static final Sport VOLLEY = new Sport("Volleyball");
     /**
      * Static {@link Sport} constant.
      */
-    public static final Sport BASKET;
+    public static final Sport BASKET = new Sport("Basketball");
     /**
      * Static {@link Sport} constant.
      */
-    public static final Sport BIKE;
-
-    /*
-     * TODO: initialize properly these sports
-     */
-    static {
-        SOCCER = null;
-        F1 = null;
-        MOTOGP = null;
-        VOLLEY = null;
-        BASKET = null;
-        BIKE = null;
-    }
+    public static final Sport BIKE = new Sport("Road biking");
 
     /**
      * Field meant to keep track of the set of sports followed/done by a user.
@@ -99,12 +86,6 @@ public class SportSocialNetworkUserImpl<U extends User> extends SocialNetworkUse
         this.sports = new HashSet<>();
     }
 
-    /*
-     * [METHODS]
-     * 
-     * Implements all the methods below
-     */
-
     /**
      * Add a new sport followed by this user: if the user already likes or does
      * the sport, nothing happens.
@@ -112,9 +93,8 @@ public class SportSocialNetworkUserImpl<U extends User> extends SocialNetworkUse
      * @param sport
      *            a sport followed/done by the user
      */
-    // TODO
     public void addSport(final Sport sport) {
-
+        this.sports.add(sport);
     }
 
     /**
@@ -124,27 +104,62 @@ public class SportSocialNetworkUserImpl<U extends User> extends SocialNetworkUse
      *            sport to use as an input
      * @return true if a user likes sport s
      */
-    // TODO
     public boolean hasSport(final Sport s) {
-        return false;
+        return this.sports.contains(s);
     }
 
-    /*
-     * TODO
-     * 
-     * Complete the definition of this static inner class defining a Sport along
-     * with its bare name.
+    /**
+     * Implements a static inner class defining a Sport along with its bare
+     * name.
      */
     public static final class Sport {
-        /*
-         * TODO
-         * 
-         * Redefine equals so that two sports are equal only if they feature the
-         * very same name. Remember that you must also redefine hashCode()!
+        private final String name;
+        private int hash;
+
+        /**
+         * @param name
+         *            the sport name
          */
-        @Override
+        public Sport(final String name) {
+            this.name = Objects.requireNonNull(name, "The sport name can't be null");
+        }
+
+        /*
+         * Redefine equals so that two sports are equal only if they feature the
+         * very same name.
+         */
+        /**
+         * {@inheritDoc}
+         */
         public boolean equals(final Object o) {
+            if (o == null) {
+                return false;
+            }
+            // instanceof would put us at risk of violating symmetry!
+            if (getClass().equals(o.getClass())) {
+                return name.equals(((Sport) o).name);
+            }
             return false;
+        }
+
+        /*
+         * Also hashCode must be re-implemented, or this class would violate the
+         * equals/hashCode contract.
+         */
+
+        /**
+         * {@inheritDoc}
+         */
+        public int hashCode() {
+            /*
+             * All fields are final. Moreover, there is equality with String. 
+             * As such, hashCode() must mimic String's hashCode, 
+             * and lazy init is doable.
+             */
+            if (hash == 0) {
+                hash = name.hashCode();
+            }
+            return hash;
         }
     }
 }
